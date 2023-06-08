@@ -7,7 +7,49 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.App {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  position: relative;
+  max-height: 110vh;
+  /* overflow-y: hidden; */
+}
+
+.navigation {
+  background-color: red;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.floor {
+  padding: 10px 0;
+
+}
+
+button {
+  width: 55px;
+}
+
+.lift1 {
+  width: 120px;
+  height: 120px;
+  background-color: yellow;
+  position: relative;
+
+  align-self: flex-end;
+
+
+}
+
+.lift2 {
+  width: 120px;
+  height: 120px;
+  background-color: yellow;
+  position: relative;
+  align-self: flex-end;
 }
