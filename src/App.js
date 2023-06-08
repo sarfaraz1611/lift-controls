@@ -6,22 +6,22 @@ function App() {
   const [obj, setobj] = useState({
     lift1: {
       direction: null,
-      currentPosition: 5,
+      currentPosition: 1,
       buffer: [],
     },
     lift2: {
       direction: null,
-      currentPosition: 1,
+      currentPosition: 2,
       buffer: [],
     },
   });
-  const [up2Req, setUp2Req] = useState([]);
-  const [down2Req, setDown2Req] = useState([]);
+
   const [upReq, setUpReq] = useState([]);
   const [downReq, setDownReq] = useState([]);
-  console.log("====================================");
-  console.log("upreq" + upReq + " downreq" + downReq);
-  console.log("====================================");
+  // console.log("====================================");
+  // console.log("upreq" + upReq + " downreq" + downReq);
+  console.log(obj);
+  // console.log("====================================");
   const flobj = [
     {
       floor: 5,
@@ -69,10 +69,6 @@ function App() {
     bottom: `${floorl2 * 20 - 20}vh`,
   };
 
-  useEffect(() => {
-    setUp2Req(upReq);
-    setDown2Req(downReq);
-  }, [upReq, downReq]);
   useEffect(() => {
     if (obj.lift1.direction === null && obj.lift2.direction === null) {
       if (upReq.length != 0) {
@@ -133,40 +129,42 @@ function App() {
     }
   }, [upReq, downReq]);
 
+  const setNewDownReq = (value) => {
+    const downReq = setDownReq(value);
+  };
+
   useEffect(() => {
+    // second in motion;
     //while in upward motion follow reqPosition >= curPosition will be chosen
 
     //while in down motion follow reqPosition <= curPosition will be chosen
     if (obj.lift1.direction === null && obj.lift2.direction !== null) {
-      //ditet directionof lift 2
+      //ditect directionof lift 2
       const curDir = obj.lift2.direction;
-
+      console.log(upReq);
       if (curDir === "up") {
-        const myUpReq = up2Req.filter(
-          (ids) => ids >= obj.lift2.currentPosition
-        );
-        const myDownReq = down2Req.filter(
+        const myUpReq = upReq.filter((ids) => ids >= obj.lift2.currentPosition);
+        console.log(upReq, "upreq");
+        const myDownReq = downReq.filter(
           (ids) => ids >= obj.lift2.currentPosition
         );
         const temp = [...myDownReq, ...myUpReq];
+
         //appen the accepted clients  to buffer and pop it from
         // pop it from global up req arra
         //change the lift position
         // uncheck the button on based on direction of lift
-        console.log(up2Req, "my filter reqq", down2Req, "my req", temp);
-        console.log("====================================");
+        console.log("upreq", upReq, " down2req", downReq, "my temp", temp);
 
         const clone = { ...obj };
         clone.lift2.buffer.push(...myUpReq);
         setobj(clone);
-        const clone2 = [...up2Req];
+        const clone2 = [...upReq];
         clone2.filter((ids) => !myUpReq.includes(ids));
-        setUp2Req(clone2);
+        setUpReq(clone2);
       } else if (curDir === "down") {
-        const myUpReq = up2Req.filter(
-          (ids) => ids >= obj.lift2.currentPosition
-        );
-        const myDownReq = down2Req.filter(
+        const myUpReq = upReq.filter((ids) => ids >= obj.lift2.currentPosition);
+        const myDownReq = downReq.filter(
           (ids) => ids >= obj.lift2.currentPosition
         );
         const temp = [...myDownReq, ...myUpReq];
@@ -174,15 +172,14 @@ function App() {
         // pop it from global up req arra
         //change the lift position
         // uncheck the button on based on direction of lift
-        console.log(up2Req, "my filter reqq", down2Req, "my req", temp);
-        console.log("====================================");
+        console.log("upreq", upReq, " down2req", downReq, "my temp", temp);
 
         const clone = { ...obj };
         clone.lift2.buffer.push(...myDownReq);
         setobj(clone);
-        const clone2 = [...down2Req];
+        const clone2 = [...downReq];
         clone2.filter((ids) => !myDownReq.includes(ids));
-        setUp2Req(clone2);
+        setNewDownReq(clone2);
       }
     } else if (obj.lift2.direction === null && obj.lift1.direction !== null) {
     } else {
