@@ -6,7 +6,7 @@ function App() {
   const [obj, setobj] = useState({
     lift1: {
       direction: null,
-      currentPosition: 4,
+      currentPosition: 5,
       buffer: [],
     },
     lift2: {
@@ -69,86 +69,124 @@ function App() {
     bottom: `${floorl2 * 20 - 20}vh`,
   };
   setTimeout(() => {
+    console.log(obj, "main obj");
+
+    // uncheck the button on based on direction of lift
+    // cahnged positio
+    // handle movement of the lift based on its buffer
+    // if (obj.lift1.buffer.length !== 0) {
+    //   if (upReq[0] != motion.lift1.currentPosition) {
+    //     motion.lift1.currentPosition -= 1;
+    //   }
+    // } else if (obj.lift2.buffer.length !== 0) {
+    //   if (upReq[0] != motion.lift2.currentPosition) {
+    //     motion.lift1.currentPosition -= 1;
+    //   }
+    // }
+    console.log(upReq);
+    console.log(downReq, "downreq");
+
     if (obj.lift1.direction === null && obj.lift2.direction === null) {
       if (upReq.length != 0) {
         const lift1diff = obj.lift1.currentPosition - upReq[0];
         const lift2diff = obj.lift2.currentPosition - upReq[0];
 
         if (Math.abs(lift1diff) <= Math.abs(lift2diff)) {
-          if (obj.lift1.currentPosition > upReq[0]) {
-            const motion = { ...obj };
-            motion.lift1.direction = "down";
-            if (upReq[0] != motion.lift1.currentPosition) {
-              motion.lift1.currentPosition -= 1;
-            }
+          //  append lift one  buffer with current request
+          //setting motion of lift one
+          const motion = { ...obj };
+          motion.lift1.buffer.push(upReq[0]);
 
-            setobj(motion);
+          //remove from main array upreq
+          setUpReq(upReq.filter((ids) => ids != upReq[0]));
+
+          if (obj.lift1.currentPosition > upReq[0]) {
+            motion.lift1.direction = "down";
+
+            // if (upReq[0] != motion.lift1.currentPosition) {
+            //   motion.lift1.currentPosition -= 1;
+            // }
           } else if (obj.lift1.currentPosition < upReq[0]) {
-            const motion = { ...obj };
             motion.lift1.direction = "up";
-            if (upReq[0] != motion.lift1.currentPosition) {
-              motion.lift1.currentPosition += 1;
-            }
-            setobj(motion);
+
+            // if (upReq[0] != motion.lift1.currentPosition) {
+            //   motion.lift1.currentPosition += 1;
+            // }
           }
-        } else {
+          setobj(motion);
+        } else if (Math.abs(lift1diff) >= Math.abs(lift2diff)) {
+          //setting motion of lift2
+          const motion = { ...obj };
+          if (motion.lift2.buffer.includes(upReq[0])) {
+            motion.lift2.buffer.push(upReq[0]);
+          }
+          setUpReq(upReq.filter((ids) => ids != upReq[0]));
+
           if (obj.lift2.currentPosition > upReq[0]) {
-            const motion = { ...obj };
             motion.lift2.direction = "down";
-            if (upReq[0] != motion.lift2.currentPosition) {
-              motion.lift2.currentPosition -= 1;
-            }
-            setobj(motion);
+
+            // if (upReq[0] != motion.lift2.currentPosition) {
+            //   motion.lift2.currentPosition -= 1;
+
+            //   motion.lift2.buffer = motion.lift2.buffer.filter((ids) => {
+            //     return ids != upReq[0];
+            //   });
+            // }
           } else if (obj.lift2.currentPosition < upReq[0]) {
-            const motion = { ...obj };
             motion.lift2.direction = "up";
-            if (upReq[0] != motion.lift2.currentPosition) {
-              motion.lift2.currentPosition += 1;
-              motion.lift2.buffer = motion.lift2.buffer.filter((ids) => {
-                return ids != upReq[0];
-              });
-            }
-            setobj(motion);
+            // if (upReq[0] != motion.lift2.currentPosition) {
+            //   motion.lift2.currentPosition += 1;
+            //   motion.lift2.buffer = motion.lift2.buffer.filter((ids) => {
+            //     return ids != upReq[0];
+            //   });
+            // }
           }
+          setobj(motion);
         }
       }
-      // after lift in motion
+
       if (downReq.length != 0) {
         const lift1diff = obj.lift1.currentPosition - downReq[0];
         const lift2diff = obj.lift2.currentPosition - downReq[0];
 
         if (Math.abs(lift1diff) <= Math.abs(lift2diff)) {
+          const motion = { ...obj };
+
+          motion.lift1.buffer.push(downReq[0]);
+          setDownReq(downReq.filter((ids) => ids != downReq[0]));
+
           if (obj.lift1.currentPosition > downReq[0]) {
-            const motion = { ...obj };
             motion.lift1.direction = "down";
-            if (upReq[0] != motion.lift1.currentPosition) {
-              motion.lift1.currentPosition -= 1;
-            }
-            setobj(motion);
+            // if (upReq[0] != motion.lift1.currentPosition) {
+            //   motion.lift1.currentPosition -= 1;
+            // }
           } else if (obj.lift1.currentPosition < downReq[0]) {
-            const motion = { ...obj };
             motion.lift1.direction = "up";
-            if (upReq[0] != motion.lift1.currentPosition) {
-              motion.lift1.currentPosition += 1;
-            }
-            setobj(motion);
+            // if (upReq[0] != motion.lift1.currentPosition) {
+            //   motion.lift1.currentPosition += 1;
+            // }
+            // setobj(motion);
           }
+          setobj(motion);
+
           //assign lifts based nearest position
           //both are at same floor send lift1
         } else {
+          const motion = { ...obj };
+          motion.lift2.buffer.push(downReq[0]);
+          setDownReq(downReq.filter((ids) => ids != downReq[0]));
+
           if (obj.lift2.currentPosition > downReq[0]) {
-            const motion = { ...obj };
             motion.lift2.direction = "down";
-            if (upReq[0] != motion.lift2.currentPosition) {
-              motion.lift2.currentPosition -= 1;
-            }
+            // if (upReq[0] != motion.lift2.currentPosition) {
+            //   motion.lift2.currentPosition -= 1;
+            // }
             setobj(motion);
           } else if (obj.lift2.currentPosition < downReq[0]) {
-            const motion = { ...obj };
             motion.lift2.direction = "up";
-            if (upReq[0] != motion.lift2.currentPosition) {
-              motion.lift2.currentPosition += 1;
-            }
+            // if (upReq[0] != motion.lift2.currentPosition) {
+            //   motion.lift2.currentPosition += 1;
+            // }
             setobj(motion);
           }
         }
@@ -157,47 +195,107 @@ function App() {
     if (obj.lift1.direction === null && obj.lift2.direction !== null) {
       //ditect directionof lift 2
       const curDir = obj.lift2.direction;
-      console.log(upReq);
+      // console.log(upReq);
       if (curDir === "up") {
         const myUpReq = upReq.filter((ids) => ids >= obj.lift2.currentPosition);
         console.log(upReq, "upreq");
-        const myDownReq = downReq.filter(
-          (ids) => ids >= obj.lift2.currentPosition
-        );
-        const temp = [...myDownReq, ...myUpReq];
+        // const myDownReq = downReq.filter(
+        //   (ids) => ids >= obj.lift2.currentPosition
+        // );
+        // const temp = [...myDownReq, ...myUpReq];
 
         //appen the accepted clients  to buffer and pop it from
-        // pop it from global up req arra
-        //change the lift position
-        // uncheck the button on based on direction of lift
-        console.log("upreq", upReq, " down2req", downReq, "my temp", temp);
 
+        console.log("upreq", upReq, " down2req", downReq);
         const clone = { ...obj };
         clone.lift2.buffer.push(...myUpReq);
+        setUpReq(
+          upReq.filter(
+            (ids) => !myUpReq.includes(ids) && !clone.lift2.buffer.includes(ids)
+          )
+        );
+        if (downReq.length != 0) {
+          clone.lift1.direction = "down";
+          const myDownReq = downReq.filter(
+            (ids) => ids <= obj.lift1.currentPosition
+          );
+          clone.lift1.buffer.push(...myDownReq);
+          setDownReq(downReq.filter((ids) => !myDownReq.includes(ids)));
+        }
         setobj(clone);
-        const clone2 = [...upReq];
-        clone2.filter((ids) => !myUpReq.includes(ids));
-        setUpReq(clone2);
       } else if (curDir === "down") {
-        const myUpReq = upReq.filter((ids) => ids >= obj.lift2.currentPosition);
+        // const myUpReq = upReq.filter((ids) => ids >= obj.lift2.currentPosition);
         const myDownReq = downReq.filter(
           (ids) => ids >= obj.lift2.currentPosition
         );
-        const temp = [...myDownReq, ...myUpReq];
+        // const temp = [...myDownReq, ...myUpReq];
         //appen the accepted clients  to buffer and pop it from
         // pop it from global up req arra
         //change the lift position
         // uncheck the button on based on direction of lift
-        console.log("upreq", upReq, " down2req", downReq, "my temp", temp);
-
+        console.log("upreq", upReq, " down2req", downReq);
         const clone = { ...obj };
         clone.lift2.buffer.push(...myDownReq);
+        setDownReq(
+          downReq.filter(
+            (ids) =>
+              !myDownReq.includes(ids) && !clone.lift2.buffer.includes(ids)
+          )
+        );
+
         setobj(clone);
-        const clone2 = [...downReq];
-        clone2.filter((ids) => !myDownReq.includes(ids));
-        setDownReq(clone2);
+        // const clone2 = [...downReq];
+        // clone2.filter((ids) => !myDownReq.includes(ids));
+        // setDownReq(clone2);
       }
     } else if (obj.lift2.direction === null && obj.lift1.direction !== null) {
+      const curDir = obj.lift1.direction;
+      // console.log(upReq);
+      if (curDir === "up") {
+        const myUpReq = upReq.filter((ids) => ids >= obj.lift1.currentPosition);
+        console.log(upReq, "upreq");
+        // const myDownReq = downReq.filter(
+        //   (ids) => ids >= obj.lift1.currentPosition
+        // );
+        // const temp = [...myDownReq, ...myUpReq];
+        //appen the accepted clients  to buffer and pop it from
+        // pop it from global up req arra
+        //change the lift position
+        // uncheck the button on based on direction of lift
+        console.log("upreq", upReq, " down2req", downReq);
+        const clone = { ...obj };
+        clone.lift1.buffer.push(...myUpReq);
+        setUpReq(
+          upReq.filter(
+            (ids) => !myUpReq.includes(ids) && !clone.lift1.buffer.includes(ids)
+          )
+        );
+        setobj(clone);
+      } else if (curDir === "down") {
+        // const myUpReq = upReq.filter((ids) => ids >= obj.lift1.currentPosition);
+        const myDownReq = downReq.filter(
+          (ids) => ids >= obj.lift1.currentPosition
+        );
+        // const temp = [...myDownReq, ...myUpReq];
+        //appen the accepted clients  to buffer and pop it from
+        // pop it from global up req arra
+        //change the lift position
+        // uncheck the button on based on direction of lift
+        console.log("upreq", upReq, " down2req", downReq);
+        const clone = { ...obj };
+        clone.lift1.buffer.push(...myDownReq);
+        setDownReq(
+          downReq.filter(
+            (ids) =>
+              !myDownReq.includes(ids) && !clone.lift1.buffer.includes(ids)
+          )
+        );
+
+        setobj(clone);
+        // const clone2 = [...downReq];
+        // clone2.filter((ids) => !myDownReq.includes(ids));
+        // setDownReq(clone2);
+      }
     } else {
     }
   }, 1000);
