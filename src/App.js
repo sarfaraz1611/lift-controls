@@ -74,15 +74,39 @@ function App() {
     // uncheck the button on based on direction of lift
     // cahnged positio
     // handle movement of the lift based on its buffer
-    // if (obj.lift1.buffer.length !== 0) {
-    //   if (upReq[0] != motion.lift1.currentPosition) {
-    //     motion.lift1.currentPosition -= 1;
-    //   }
-    // } else if (obj.lift2.buffer.length !== 0) {
-    //   if (upReq[0] != motion.lift2.currentPosition) {
-    //     motion.lift1.currentPosition -= 1;
-    //   }
-    // }
+    const stateobj = {
+      ...obj,
+    };
+    if (stateobj.lift1.buffer.length !== 0) {
+      
+      if (stateobj.lift1.direction == "up") {
+        stateobj.lift1.currentPosition += 1;
+      } else if (stateobj.lift1.direction == "down") {
+        stateobj.lift1.currentPosition -= 1;
+      }
+
+      if (stateobj.lift1.buffer.includes(stateobj.lift1.currentPosition)) {
+        stateobj.lift1.buffer.filter(
+          (ids) => ids != stateobj.lift1.currentPosition
+        );
+      }
+    } else if (stateobj.lift2.buffer.length !== 0) {
+
+      if (stateobj.lift2.direction == "up") {
+        stateobj.lift2.currentPosition += 1;
+      } else if (stateobj.lift2.direction == "down") {
+        stateobj.lift2.currentPosition -= 1;
+      }
+      if (stateobj.lift2.buffer.includes(stateobj.lift2.currentPosition)) {
+        stateobj.lift2.buffer.filter(
+          (ids) => ids != stateobj.lift2.currentPosition
+        );
+      }
+    }
+    else {
+      
+    }
+    setobj(stateobj);
     console.log(upReq);
     console.log(downReq, "downreq");
 
@@ -191,8 +215,7 @@ function App() {
           }
         }
       }
-    }
-    if (obj.lift1.direction === null && obj.lift2.direction !== null) {
+    } else if (obj.lift1.direction === null && obj.lift2.direction !== null) {
       //ditect directionof lift 2
       const curDir = obj.lift2.direction;
       // console.log(upReq);
@@ -222,6 +245,7 @@ function App() {
           clone.lift1.buffer.push(...myDownReq);
           setDownReq(downReq.filter((ids) => !myDownReq.includes(ids)));
         }
+
         setobj(clone);
       } else if (curDir === "down") {
         // const myUpReq = upReq.filter((ids) => ids >= obj.lift2.currentPosition);
@@ -242,6 +266,14 @@ function App() {
               !myDownReq.includes(ids) && !clone.lift2.buffer.includes(ids)
           )
         );
+        if (upReq.length != 0) {
+          clone.lift1.direction = "up";
+          const myUpReq = upReq.filter(
+            (ids) => ids >= obj.lift1.currentPosition
+          );
+          clone.lift1.buffer.push(...myUpReq);
+          setDownReq(upReq.filter((ids) => !myUpReq.includes(ids)));
+        }
 
         setobj(clone);
         // const clone2 = [...downReq];
@@ -270,6 +302,14 @@ function App() {
             (ids) => !myUpReq.includes(ids) && !clone.lift1.buffer.includes(ids)
           )
         );
+        if (downReq.length != 0) {
+          clone.lift2.direction = "down";
+          const myDownReq = downReq.filter(
+            (ids) => ids <= obj.lift2.currentPosition
+          );
+          clone.lift2.buffer.push(...myDownReq);
+          setDownReq(downReq.filter((ids) => !myDownReq.includes(ids)));
+        }
         setobj(clone);
       } else if (curDir === "down") {
         // const myUpReq = upReq.filter((ids) => ids >= obj.lift1.currentPosition);
@@ -290,7 +330,14 @@ function App() {
               !myDownReq.includes(ids) && !clone.lift1.buffer.includes(ids)
           )
         );
-
+        if (upReq.length != 0) {
+          clone.lift2.direction = "up";
+          const myUpReq = upReq.filter(
+            (ids) => ids >= obj.lift2.currentPosition
+          );
+          clone.lift2.buffer.push(...myUpReq);
+          setDownReq(upReq.filter((ids) => !myUpReq.includes(ids)));
+        }
         setobj(clone);
         // const clone2 = [...downReq];
         // clone2.filter((ids) => !myDownReq.includes(ids));
