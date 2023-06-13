@@ -12,7 +12,7 @@ body {
   justify-content: center;
   align-content: center;
   position: relative;
-  max-height: 110vh;
+  /* max-height: 110vh; */
   /* overflow-y: hidden; */
 }
 
